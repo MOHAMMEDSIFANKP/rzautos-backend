@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reports PDF</title>
+    <style>
+        /* Add your styles here for the PDF */
+    </style>
+</head>
+<style>
+    td{
+        padding: 5px;
+        text-align: center;
+    }
+    th{
+        padding: 5px;
+        text-align: center;
+    }
+</style>
+<body>
+    <h1>Report Details</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Car Name</th>
+                <th>Sold Price</th>
+                <th>Const Price</th>
+                <th>Additional Expenses</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in reports %}
+            <tr>
+                <td>{{ item.car }}</td>
+                <td>{{ item.sold_price }}</td>
+                <td>{{ item.cost_price }}</td>
+                <td>{{ item.additional_expenses }}</td>
+                <td>{{ item.date_added }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
