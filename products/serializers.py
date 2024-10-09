@@ -26,13 +26,37 @@ class CarsSerializers(serializers.ModelSerializer):
     transmission = TransmissionSerializers()
     fuel_type = FuelTypeSerializers()
     color = ColorSerializers()
+
     class Meta:
         model = Cars
-        fields = ['id','vehicle_registration','company','model','engine_size','transmission',
-                  'fuel_type','color','selling_price','sale_price','description','slug']
+        fields = [
+            'id',
+            'thumbnail',
+            'vehicle_registration',
+            'company',
+            'model',
+            'engine_size',
+            'transmission',
+            'fuel_type',
+            'color',
+            'mileage',  
+            'body_type', 
+            'bhp',
+            'co2_emissions',
+            'number_of_doors',
+            'number_of_keys',
+            'number_of_owners',
+            'vat_type',
+            'log_book',
+            'sale_date',
+            'registration_date',
+            'selling_price',
+            'sale_price',
+            'description',
+            'slug'
+        ]
 
-
-class CarImagesSerializers(serializers.ModelSerializer):
+class CarImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarImages
         fields = ['id','car','image','image_alt']
