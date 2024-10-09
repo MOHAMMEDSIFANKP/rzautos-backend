@@ -2,7 +2,7 @@ import csv
 from django.http import HttpResponse
 from django.contrib import admin
 from .models import *
-from products.helper import generate_pdf
+from utils.helper import generate_pdf
 
 # Register your models here.
 
@@ -52,6 +52,11 @@ class EnquiryAdmin(admin.ModelAdmin):
     export_as_csv.short_description = "Export Selected Reports as CSV"
     export_as_pdf.short_description = "Export Selected as PDF"
 
+@admin.register(HomePageCarousel)
+class SeoAdmin(admin.ModelAdmin):
+    search_fields = ('title_1', 'title_2', )
+    list_display = ('title_1', 'title_2', )
+    list_filter = ('date_added', 'is_deleted')
 @admin.register(SEO)
 class SeoAdmin(admin.ModelAdmin):
     search_fields = ('page', 'path', )

@@ -2,7 +2,7 @@ import csv
 from django.http import HttpResponse
 from django.contrib import admin
 from .models import *
-from .helper import generate_pdf
+from utils.helper import generate_pdf
 # Register your models here.
 
 @admin.register(Transmission)

@@ -68,6 +68,20 @@ class Enquiry(BaseModel):
     def __str__(self):
         return self.name if self.name else str(self.id)
 
+class HomePageCarousel(BaseModel):
+    image = models.ImageField(upload_to='carousel/', null=True, blank=True)
+    title_1 = models.CharField(max_length=300,null=True,blank=True)
+    title_2 = models.CharField(max_length=300)
+
+    class Meta:
+        db_table='web.homepagecarousel'
+        verbose_name = ('HomePage Carousels')
+        verbose_name_plural = ('HomePage Carousel')
+        ordering = ('date_added',)
+
+    def __str__(self):
+        return self.title_2 if self.title_2 else str(self.id)
+
 
 class SEO(BaseModel):
     page=models.CharField(max_length=200,blank=True,null=True)

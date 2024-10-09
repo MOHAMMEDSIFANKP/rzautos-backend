@@ -21,6 +21,10 @@ class Enquiryserializers(serializers.ModelSerializer):
         car_model = obj.car.model if obj.car.model else ''
         return f'{obj.car.company.company_name} - {car_model}'
 
+class HomePageCarouselSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = HomePageCarousel
+        fields = ['id', 'image', 'title_1', 'title_2']
 class SeoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SEO
