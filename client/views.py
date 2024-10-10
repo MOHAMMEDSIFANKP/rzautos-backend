@@ -73,7 +73,7 @@ class HomePageCarouselApi(BaseAPIView):
     def get(self, request):
         try:
             queryset = self.get_queryset()
-            serializer = self.serializer_class(queryset, many=True, context={'request': request})
+            serializer = self.serializer_class(queryset.order_by('-date_added'), many=True, context={'request': request})
             return self.create_response(
                 data=serializer.data,
                 message="Home Page Carousel data fetched successfully",
@@ -93,13 +93,28 @@ class CarsApi(BaseAPIView):
     model = product_models.Cars
     serializer_class = project_serializers.CarsSerializers
 
-    def get(self, request,id=None):
+    def get(self, request):
         try:
+            page, page_limit = self.validate_pagination(request)
+            if page is None or page_limit is None:
+                return self.create_response(data=[], message="Invalid pagination parameters", status_code=6004, detail="Bad Request")
+
+            filter_params = request.GET.dict()
+            search_fields = ['model','company__company_name','body_type','fuel_type__fuel_type','vehicle_registration','chassis_number','transmission__transmission']
+            paginated_queryset = custom_filter(
+                self.get_queryset(),
+                filter_params,
+                search_fields,
+                page,
+                page_limit
+            )
             queryset = self.get_queryset()
-            serializer = self.serializer_class(queryset, many=True, context={'request': request})
+            serializer = self.serializer_class(paginated_queryset, many=True, context={'request': request})
             return self.create_response(
                 data=serializer.data,
                 message="Cars data fetched successfully",
+                page=paginated_queryset.number,
+                total_count=paginated_queryset.paginator.count
             )
         except Exception as e:
             return self.create_response(
