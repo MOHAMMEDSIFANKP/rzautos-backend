@@ -31,6 +31,7 @@ class CarsAdmin(admin.ModelAdmin):
     list_display = ('vehicle_registration','company','model','engine_size','transmission','fuel_type','selling_price')
     list_filter = ('company__company_name','transmission__transmission','fuel_type__fuel_type','color__color','date_added', 'is_deleted')
     search_fields = ('vehicle_registration','model')
+    prepopulated_fields = {"slug": ("vehicle_registration",)}
 
 @admin.register(CarImages)
 class CarImagesAdmin(admin.ModelAdmin):

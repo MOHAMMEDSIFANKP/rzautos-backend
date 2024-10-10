@@ -4,7 +4,7 @@ from .models import *
 class TestimonialsSerializers(serializers.ModelSerializer):
     class Meta:
         model = Testimonials
-        fields = ['id','location','review_text','profile_picture']
+        fields = ['id','name','location','review_text','profile_picture']
 
 class Faqserializers(serializers.ModelSerializer):
     class Meta:
