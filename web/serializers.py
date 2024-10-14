@@ -15,11 +15,15 @@ class Enquiryserializers(serializers.ModelSerializer):
     car_name = serializers.SerializerMethodField()
     class Meta:
         model = Enquiry
-        fields = ['id','car','name','number','email','message','car_name']
+        fields = ['id','car','name','number','email','message','car_name','date_added']
 
     def get_car_name(self,obj):
-        car_model = obj.car.model if obj.car.model else ''
-        return f'{obj.car.company.company_name} - {car_model}'
+        car_model =''
+        if obj.car:
+            car_model = obj.car.model if obj.car.model else ''
+            return f'{obj.car.company.company_name} - {car_model}'
+        else:
+            return None
 
 class HomePageCarouselSerializers(serializers.ModelSerializer):
     class Meta:
