@@ -95,20 +95,26 @@ class CarsApi(BaseAPIView):
 
     def get(self, request):
         try:
+            price_order_type = request.GET.get('price_order_type', 'low')
             page, page_limit = self.validate_pagination(request)
             if page is None or page_limit is None:
                 return self.create_response(data=[], message="Invalid pagination parameters", status_code=6004, detail="Bad Request")
-
+            
+            queryset = self.get_queryset()
+            if price_order_type:
+                if price_order_type == 'low':
+                    queryset = queryset.order_by('selling_price')
+                elif price_order_type == 'high':  
+                    queryset = queryset.order_by('-selling_price')
             filter_params = request.GET.dict()
             search_fields = ['model','company__company_name','body_type','fuel_type__fuel_type','vehicle_registration','chassis_number','transmission__transmission']
             paginated_queryset = custom_filter(
-                self.get_queryset(),
+                queryset,
                 filter_params,
                 search_fields,
                 page,
                 page_limit
             )
-            queryset = self.get_queryset()
             serializer = self.serializer_class(paginated_queryset, many=True, context={'request': request})
             return self.create_response(
                 data=serializer.data,
@@ -244,6 +250,7 @@ class SeoAPIView(BaseAPIView):
             total_count=paginated_queryset.paginator.count
         )
 
+from datetime import datetime
 
 class EnquiryApi(BaseAPIView):
     """
@@ -264,9 +271,9 @@ class EnquiryApi(BaseAPIView):
                     'number': serializer.data['number'],
                     'message': serializer.data['message'],
                     'car_name': serializer.data['car_name'],
-                    'date_added': serializer.data['date_added'].strftime('%d-%m-%y')
+                    'date_added': datetime.strptime(serializer.data['date_added'], '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%d-%m-%y')
                 }
-                template = get_template('enquiry.html').render(context)
+                template = get_template('enquiry-email.html').render(context)
                 e=settings.EMAIL_HOST_USER
                 send_mail(
                     'Enquiry Data',
@@ -279,6 +286,7 @@ class EnquiryApi(BaseAPIView):
                 return self.create_response(
                     data=serializer.data,
                     message="Enquiry successfully",
+                    status_code=6001,
                 )
             else:
                 return self.create_response(
@@ -296,3 +304,34 @@ class EnquiryApi(BaseAPIView):
                 detail="Error fetching Faq data"
             )
         
+
+# Filter Suggestions
+class TransmissionAPIView(BaseAPIView):
+    """
+    API view to retrieve Transmission Suggestion.
+    """
+    model = product_models.Transmission
+    serializer_class = project_serializers.TransmissionSerializers
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True, context={'request': request})
+        return self.create_response(
+            data=serializer.data,
+            message="Transmission data fetched successfully",
+        )
+    
+class FuelTypeAPIView(BaseAPIView):
+    """
+    API view to retrieve Transmission Suggestion.
+    """
+    model = product_models.FuelType
+    serializer_class = project_serializers.FuelTypeSerializers
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True, context={'request': request})
+        return self.create_response(
+            data=serializer.data,
+            message="Fuel Type data fetched successfully",
+        )

@@ -22,7 +22,7 @@ def custom_filter(queryset: Any, filter_params: Dict[str, Any], search_fields: L
         ValueError: If invalid pagination parameters are provided.
     """
 
-    filter_params = {k: v for k, v in filter_params.items() if k not in ['page', 'page_limit']}
+    filter_params = {k: v for k, v in filter_params.items() if k not in ['page', 'page_limit','price_order_type']}
 
     filter_conditions = Q()
     if filter_params:
@@ -34,7 +34,7 @@ def custom_filter(queryset: Any, filter_params: Dict[str, Any], search_fields: L
                 for search_field in search_fields:
                     search_conditions |= Q(**{f"{search_field}__icontains": value})
                 filter_conditions &= search_conditions
-            elif key in field_names and value:
+            elif key in field_names or "__" in key and value:
                 filter_conditions &= Q(**{key: value})
             else:
                 print(f"Warning: Invalid field '{key}' for filtering.")
