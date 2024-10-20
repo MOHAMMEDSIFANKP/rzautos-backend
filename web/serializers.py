@@ -24,6 +24,16 @@ class Enquiryserializers(serializers.ModelSerializer):
             return f'{obj.car.company.company_name} - {car_model}'
         else:
             return None
+        
+class ResaleEnquirySerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ResaleEnquiry
+        fields = ['id','name','number','email','registration','mileage','transmission','body_type','fuel_type','color','date_added','make','model']
+
+class ResaleEnquiryImagesSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ResaleEnquiryImages
+        fields = ['id','resale','image']
 
 class HomePageCarouselSerializers(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +43,15 @@ class SeoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SEO
         fields = ['id', 'page', 'path', 'meta_title','meta_description']
+
+
+class PopularServicesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PopularServices
+        fields = ['id','icon','title','description']
+
+
+class HeadOfficeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HeadOffice
+        fields = ['id','address','phone','email','office_hours','footer_content','instagram','facebook','linked_in','twitter']

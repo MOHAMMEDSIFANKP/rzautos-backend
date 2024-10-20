@@ -10,17 +10,27 @@ from utils.helper import generate_pdf
 @admin.register(Testimonials)
 class TestimonialAdmin(admin.ModelAdmin):
     search_fields = ('name', 'location', 'review_text')
-    list_filter = ('date_added', 'is_deleted')
+    list_filter = ('date_added', 'is_hide')
 
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
     search_fields = ('question',)
-    list_filter = ('date_added', 'is_deleted')
+    list_filter = ('date_added', 'is_hide')
+
+@admin.register(ResaleEnquiry)
+class ResaleEnquiryAdmin(admin.ModelAdmin):
+    search_fields = ('name','email','number')
+    list_display = ('name','email','number')
+    list_filter = ('date_added', 'is_hide')
+
+@admin.register(ResaleEnquiryImages)
+class ResaleEnquiryImagesAdmin(admin.ModelAdmin):
+    list_filter = ('resale','date_added', 'is_hide')
 
 @admin.register(Enquiry)
 class EnquiryAdmin(admin.ModelAdmin):
     search_fields = ('name', 'email', 'message')
-    list_filter = ('car','date_added', 'is_deleted')
+    list_filter = ('car','date_added', 'is_hide')
     date_hierarchy = 'date_added'
     actions = ['export_as_csv','export_as_pdf']  
 
@@ -53,11 +63,31 @@ class EnquiryAdmin(admin.ModelAdmin):
     export_as_pdf.short_description = "Export Selected as PDF"
 
 @admin.register(HomePageCarousel)
-class SeoAdmin(admin.ModelAdmin):
+class HomaPageCarouselAdmin(admin.ModelAdmin):
     search_fields = ('title_1', 'title_2', )
     list_display = ('title_1', 'title_2', )
-    list_filter = ('date_added', 'is_deleted')
+    list_filter = ('date_added', 'is_hide')
+
+@admin.register(PopularServices)
+class PopularServicesAdmin(admin.ModelAdmin):
+    list_display = ('title','description')
+    search_fields = ('title',)
+
+@admin.register(HeadOffice)
+class HeadOfficeAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        # Allow adding only if no instance exists
+        return not HeadOffice.objects.exists()
+
+    def changelist_view(self, request, extra_context=None):
+        # Redirect to the edit page if an instance exists
+        if HeadOffice.objects.exists():
+            head_office = HeadOffice.objects.first()
+            return self.change_view(request, object_id=str(head_office.pk))
+        return super().changelist_view(request, extra_context=extra_context)
+
+
 @admin.register(SEO)
 class SeoAdmin(admin.ModelAdmin):
     search_fields = ('page', 'path', )
-    list_filter = ('date_added', 'is_deleted')
+    list_filter = ('date_added', 'is_hide')

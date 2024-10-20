@@ -8,7 +8,10 @@ urlpatterns = [
     path('testimonials/', views.TestimonialsApi.as_view(), name='testimonials-list'),
     path('faq/', views.FaqApi.as_view(), name='faq-list'),
     path('seo/', views.SeoAPIView.as_view(), name='seo-list'),
-    path('enquiry/', views.EnquiryApi.as_view(), name='fuel-types-list'),
+    path('enquiry/', views.EnquiryApi.as_view(), name='enquiry'),
+    path('resale-enquiry/', views.ResaleEnquiryApi.as_view(), name='resale-enquiry'),
+    path('popular-services/', views.PopularServicesAPIView.as_view(), name='popular-services-get'),
+    path('head-office/', views.HeadOfficeAPIView.as_view(), name='head-office-get'),
 
 # Suggestion
     path('transmission/', views.TransmissionAPIView.as_view(), name='transmission-list'),
