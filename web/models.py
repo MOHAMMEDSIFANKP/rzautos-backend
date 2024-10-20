@@ -7,7 +7,7 @@ class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     date_added = models.DateTimeField(db_index=True, default=timezone.now, editable=True)
     date_updated = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False, db_index=True)
+    is_hide = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         abstract = True
@@ -49,6 +49,41 @@ class Faq(BaseModel):
     def __str__(self):
         return self.question
     
+class ResaleEnquiry(BaseModel):
+    name = models.CharField(max_length=300, blank=True, null=True)
+    number = models.PositiveBigIntegerField(blank=True, null=True)
+    email = models.EmailField(null=True, blank=True)
+    make = models.CharField(max_length=300,blank=True,null=True)
+    model = models.CharField(max_length=500,blank=True,null=True)
+    registration = models.CharField(max_length=300,blank=True,null=True)
+    mileage = models.CharField(max_length=100,blank=True,null=True)
+    transmission = models.CharField(max_length=255,blank=True,null=True)
+    body_type = models.CharField(max_length=255,blank=True,null=True)
+    fuel_type = models.CharField(max_length=255,blank=True,null=True)
+    color = models.CharField(max_length=255,blank=True,null=True)
+
+    class Meta:
+        db_table = 'web.resaleenquiry'
+        verbose_name = 'Resale Enquiry'
+        verbose_name_plural = 'Resale Enquirys'
+        ordering = ('-date_added',)
+
+    def __str__(self):
+        return self.name if self.name else str(self.id)
+    
+class ResaleEnquiryImages(BaseModel):
+    resale = models.ForeignKey(ResaleEnquiry, on_delete=models.CASCADE)
+    image = models.FileField(upload_to='resale_enquiry')
+
+    class Meta:
+        db_table = 'web.resaleenquiryimages'
+        verbose_name = 'Resale Enquiry Images'
+        verbose_name_plural = 'Resale Enquiry Images'
+        ordering = ('-date_added',)
+
+    def __str__(self):
+        return str(self.id)
+    
 
 class Enquiry(BaseModel):
     car = models.ForeignKey('products.Cars',on_delete=models.CASCADE,blank=True,null=True)
@@ -82,6 +117,42 @@ class HomePageCarousel(BaseModel):
     def __str__(self):
         return self.title_2 if self.title_2 else str(self.id)
 
+class PopularServices(BaseModel):
+    title = models.CharField(max_length=300)
+    icon = models.FileField(upload_to='popular_service',null=True,blank=True)
+    description = models.TextField(null=True,blank=True)
+
+    class Meta:
+        db_table='web.popularservices'
+        verbose_name = ('PopularServices')
+        verbose_name_plural = ('PopularServices')
+        ordering = ('date_added',)
+
+    def __str__(self) -> str:
+        return self.title
+
+
+from django.core.exceptions import ValidationError
+
+class HeadOffice(models.Model):
+    address = models.CharField(max_length=255)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    office_hours = models.CharField(max_length=100)
+    footer_content = models.TextField()
+    instagram = models.TextField()
+    facebook = models.TextField()
+    linked_in = models.TextField()
+    twitter = models.TextField()
+
+
+    def save(self, *args, **kwargs):
+        if HeadOffice.objects.exists() and not self.pk:
+            raise ValidationError("Only one HeadOffice instance is allowed.")
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return "Web Site Information"
 
 class SEO(BaseModel):
     page=models.CharField(max_length=200,blank=True,null=True)

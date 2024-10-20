@@ -22,6 +22,8 @@
         <thead>
             <tr>
                 <th>Car Name</th>
+                <th>Transmission</th>
+                <th>Fuel Type</th>
                 <th>Sold Price</th>
                 <th>Const Price</th>
                 <th>Additional Expenses</th>
@@ -32,6 +34,8 @@
             {% for item in reports %}
             <tr>
                 <td>{{ item.car }}</td>
+                <td>{{ item.car.transmission.transmission }}</td>
+                <td>{{ item.car.fuel_type.fuel_type }}</td>
                 <td>{{ item.sold_price }}</td>
                 <td>{{ item.cost_price }}</td>
                 <td>{{ item.additional_expenses }}</td>

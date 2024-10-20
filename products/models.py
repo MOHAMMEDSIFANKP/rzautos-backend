@@ -39,19 +39,19 @@ class Color(BaseModel):
     def __str__(self) -> str:
         return self.color if self.color else str(self.id)
     
-class Company(BaseModel):
+class Make(BaseModel):
     logo = models.FileField(upload_to='company_logo', blank=True,null=True)
     company_name = models.CharField(max_length=255)
     description = models.TextField(blank=True,null=True)
 
     class Meta:
         db_table = 'products.company'
-        verbose_name = 'Company'
-        verbose_name_plural = 'Companys'
+        verbose_name = 'Make'
+        verbose_name_plural = 'Makes'
         ordering = ('-date_added',)
 
     def __str__(self) -> str:
-        return self.company_name if self.company_name else str(self.id)
+        return self.company_name 
 
 class Cars(BaseModel): 
     VEHICLE_TYPE_CHOICES = [
@@ -74,6 +74,25 @@ class Cars(BaseModel):
         ('TRAILER', 'Trailer'),
     ]
     thumbnail = models.ImageField(upload_to='car_images/thumbnail')
+    make = models.ForeignKey(
+        Make, 
+        on_delete=models.CASCADE, 
+        help_text="Select the company the vehicle belongs to (e.g., bmw)"
+    )
+    model = models.CharField(
+        max_length=50, 
+        help_text="Enter the model of the vehicle (e.g., Polo, Golf)"
+    )
+    fuel_type = models.ForeignKey(
+        FuelType, 
+        on_delete=models.CASCADE, 
+        help_text="Select the vehicle's fuel type (e.g., Petrol, Diesel)"
+    )
+    transmission = models.ForeignKey(
+        Transmission, 
+        on_delete=models.CASCADE, 
+        help_text="Select the vehicle's transmission type (e.g., Automatic, Manual)"
+    )
     vehicle_type = models.CharField(
         max_length=200,
         choices=VEHICLE_TYPE_CHOICES,
@@ -85,64 +104,17 @@ class Cars(BaseModel):
         unique=True, 
         help_text="Enter the vehicle's registration number (e.g., GD08 MDE)"
     )
+    color = models.ForeignKey(
+        Color, 
+        on_delete=models.CASCADE, 
+        help_text="Select the color of the vehicle"
+    )
     chassis_number = models.CharField(
         max_length=50, 
         unique=True, 
         blank=True, 
         null=True, 
         help_text="Enter the vehicle's chassis number"
-    )
-    company = models.ForeignKey(
-        Company, 
-        on_delete=models.CASCADE, 
-        help_text="Select the company the vehicle belongs to (e.g., bmw)"
-    )
-    model = models.CharField(
-        max_length=50, 
-        help_text="Enter the model of the vehicle (e.g., Polo, Golf)"
-    )
-    engine_size = models.DecimalField(
-        max_digits=4, 
-        decimal_places=1, 
-        help_text="Enter engine size in liters (e.g., 2.0)"
-    )
-    transmission = models.ForeignKey(
-        Transmission, 
-        on_delete=models.CASCADE, 
-        help_text="Select the vehicle's transmission type (e.g., Automatic, Manual)"
-    )
-    fuel_type = models.ForeignKey(
-        FuelType, 
-        on_delete=models.CASCADE, 
-        help_text="Select the vehicle's fuel type (e.g., Petrol, Diesel)"
-    )
-    color = models.ForeignKey(
-        Color, 
-        on_delete=models.CASCADE, 
-        help_text="Select the color of the vehicle"
-    )
-    mileage = models.IntegerField(
-        null=True, 
-        blank=True, 
-        help_text="Enter the vehicle's mileage (in miles or kilometers)"
-    )
-    body_type = models.CharField(
-        max_length=50, 
-        blank=True, 
-        null=True, 
-        help_text="Enter the body type (e.g., Hatchback, Sedan)"
-    )
-    bhp = models.IntegerField(
-        null=True, 
-        blank=True, 
-        help_text="Enter the vehicle's horsepower (BHP)"
-    )
-    co2_emissions = models.DecimalField(
-        max_digits=5, 
-        decimal_places=1, 
-        null=True, 
-        blank=True, 
-        help_text="Enter CO2 emissions (in g/km)"
     )
     number_of_doors = models.IntegerField(
         null=True, 
@@ -158,6 +130,29 @@ class Cars(BaseModel):
         null=True, 
         blank=True, 
         help_text="Enter the number of previous owners"
+    )
+    engine_size = models.DecimalField(
+        max_digits=4, 
+        decimal_places=1, 
+        help_text="Enter engine size in liters (e.g., 2.0)"
+    )
+    mileage = models.IntegerField(
+        null=True, 
+        blank=True, 
+        help_text="Enter the vehicle's mileage (in miles or kilometers)"
+    )
+    body_type = models.CharField(
+        max_length=50, 
+        blank=True, 
+        null=True, 
+        help_text="Enter the body type (e.g., Hatchback, Sedan)"
+    )
+    co2_emissions = models.DecimalField(
+        max_digits=5, 
+        decimal_places=1, 
+        null=True, 
+        blank=True, 
+        help_text="Enter CO2 emissions (in g/km)"
     )
     vat_type = models.CharField(
         max_length=50, 
@@ -217,7 +212,7 @@ class Cars(BaseModel):
         ordering = ('-date_added',)
 
     def __str__(self):
-        return f"{self.company} {self.model} ({self.vehicle_registration})"
+        return f"{self.make} {self.model} ({self.vehicle_registration})"
     
 class CarImages(BaseModel):
     car = models.ForeignKey(Cars, on_delete=models.CASCADE)
@@ -267,4 +262,4 @@ class Report(BaseModel):
         ordering = ('-date_added',)
 
     def __str__(self):
-        return f"Report for {self.car.company} {self.car.model} ({self.car.vehicle_registration})"
+        return f"Report for {self.car.make} {self.car.model} ({self.car.vehicle_registration})"

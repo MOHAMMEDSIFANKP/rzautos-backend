@@ -16,13 +16,13 @@ class ColorSerializers(serializers.ModelSerializer):
         model = Color
         fields = ['id','color']
 
-class CompanySerializers(serializers.ModelSerializer):
+class MakeSerializers(serializers.ModelSerializer):
     class Meta:
-        model = Company
+        model = Make
         fields = ['id','logo','company_name','description']
 
 class CarsSerializers(serializers.ModelSerializer):
-    company = CompanySerializers()
+    make = MakeSerializers()
     transmission = TransmissionSerializers()
     fuel_type = FuelTypeSerializers()
     color = ColorSerializers()
@@ -33,7 +33,7 @@ class CarsSerializers(serializers.ModelSerializer):
             'id',
             'thumbnail',
             'vehicle_registration',
-            'company',
+            'make',
             'model',
             'engine_size',
             'transmission',
@@ -41,7 +41,6 @@ class CarsSerializers(serializers.ModelSerializer):
             'color',
             'mileage',  
             'body_type', 
-            'bhp',
             'co2_emissions',
             'number_of_doors',
             'number_of_keys',

@@ -6,6 +6,7 @@ from web import serializers as web_serializers
 
 from utils.filters import custom_filter
 from django.conf import settings
+from datetime import datetime
 from django.core.mail import send_mail
 from django.template.loader import get_template
 from django.shortcuts import get_object_or_404
@@ -24,7 +25,7 @@ class BaseAPIView(APIView):
     serializer_class = None
 
     def get_queryset(self):
-        return self.model.objects.filter(is_deleted=False)
+        return self.model.objects.filter(is_hide=False)
 
     def get_object(self, id):
         return get_object_or_404(self.get_queryset(), id=id)
@@ -107,7 +108,7 @@ class CarsApi(BaseAPIView):
                 elif price_order_type == 'high':  
                     queryset = queryset.order_by('-selling_price')
             filter_params = request.GET.dict()
-            search_fields = ['model','company__company_name','body_type','fuel_type__fuel_type','vehicle_registration','chassis_number','transmission__transmission']
+            search_fields = ['model','make__company_name','body_type','fuel_type__fuel_type','vehicle_registration','chassis_number','transmission__transmission']
             paginated_queryset = custom_filter(
                 queryset,
                 filter_params,
@@ -145,7 +146,7 @@ class CarsSingleApi(BaseAPIView):
                 serializer = self.serializer_class(queryset, context={'request': request})
 
                 # Get the related car images
-                car_images_queryset = product_models.CarImages.objects.filter(car=id, is_deleted=False)
+                car_images_queryset = product_models.CarImages.objects.filter(car=id, is_hide=False)
                 car_image_serializer = project_serializers.CarImagesSerializer(
                     car_images_queryset, many=True, context={'request': request}
                 )
@@ -250,11 +251,10 @@ class SeoAPIView(BaseAPIView):
             total_count=paginated_queryset.paginator.count
         )
 
-from datetime import datetime
 
 class EnquiryApi(BaseAPIView):
     """
-    API view to retrieve Faq.
+    API view to send enquiry.
     """
     model = web_models.Enquiry
     serializer_class = web_serializers.Enquiryserializers
@@ -304,6 +304,81 @@ class EnquiryApi(BaseAPIView):
                 detail="Error fetching Faq data"
             )
         
+class ResaleEnquiryApi(BaseAPIView):
+    """
+    API view to send resale enquiry.
+    """
+    model = web_models.ResaleEnquiry
+    serializer_class = web_serializers.ResaleEnquirySerializers
+
+    def post(self, request):
+        try:
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                enquiry = serializer.save()
+
+                file_links = []
+                images = request.FILES.getlist('images')
+                for image in images:
+                    images_serializer = web_serializers.ResaleEnquiryImagesSerializers(data={
+                        'resale': enquiry.id,
+                        'image': image  
+                    })
+                    if images_serializer.is_valid():
+                        file_instances = images_serializer.save() 
+                        file_links.append(request.build_absolute_uri(file_instances.image.url))
+                    else:
+                        print('Image serializer errors:', images_serializer.errors)
+                
+
+                        
+
+                context = {
+                    'name': serializer.data['name'],
+                    'email': serializer.data['email'],
+                    'number': serializer.data['number'],
+                    'make': serializer.data['make'],
+                    'model': serializer.data['model'],
+                    'registration': serializer.data['registration'],
+                    'mileage': serializer.data['mileage'],
+                    'transmission': serializer.data['transmission'],
+                    'body_type': serializer.data['body_type'],
+                    'fuel_type': serializer.data['fuel_type'],
+                    'color': serializer.data['color'],
+                    'date_added': datetime.strptime(serializer.data['date_added'], '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%d-%m-%y'),
+                    "file_links": file_links,
+                }
+                template = get_template('resaleenquiry-email.html').render(context)
+                e=settings.EMAIL_HOST_USER
+                send_mail(
+                    'Enquiry Data',
+                    None, 
+                    settings.EMAIL_HOST_USER,
+                    ['muhammadsifan.accolades@gmail.com'],
+                    fail_silently=False,
+                    html_message = template,
+                    )
+                return self.create_response(
+                    data=serializer.data,
+                    message="Enquiry successfully",
+                    status_code=6001,
+                )
+            else:
+                return self.create_response(
+                    data="",
+                    detail="Erro",
+                    status_code=6004,
+                    message='Invalid data'
+                )
+            
+        except Exception as e:
+            return self.create_response(
+                data=serializer.data,
+                message= f'Something went wrong {e}',
+                status_code=6004,
+                detail="Error fetching data"
+            )
+        
 
 # Filter Suggestions
 class TransmissionAPIView(BaseAPIView):
@@ -334,4 +409,35 @@ class FuelTypeAPIView(BaseAPIView):
         return self.create_response(
             data=serializer.data,
             message="Fuel Type data fetched successfully",
+        )
+    
+
+class PopularServicesAPIView(BaseAPIView):
+    """
+    API view to retrieve Popular Service.
+    """
+    model = web_models.PopularServices
+    serializer_class = web_serializers.PopularServicesSerializer
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True, context={'request': request})
+        return self.create_response(
+            data=serializer.data,
+            message="Popular Service data fetched successfully",
+        )
+
+class HeadOfficeAPIView(BaseAPIView):
+    """
+    API view to retrieve Head Office.
+    """
+    model = web_models.HeadOffice
+    serializer_class = web_serializers.HeadOfficeSerializer
+
+    def get(self, request):
+        queryset = self.model.objects.all()
+        serializer = self.serializer_class(queryset, many=True, context={'request': request})
+        return self.create_response(
+            data=serializer.data,
+            message="Head Office data fetched successfully",
         )
