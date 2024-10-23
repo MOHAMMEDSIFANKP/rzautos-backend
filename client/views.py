@@ -279,7 +279,7 @@ class EnquiryApi(BaseAPIView):
                     'Enquiry Data',
                     None, 
                     settings.EMAIL_HOST_USER,
-                    ['muhammadsifan.accolades@gmail.com'],
+                     settings.EMAIL_RECIPIENTS,
                     fail_silently=False,
                     html_message = template,
                     )
@@ -354,7 +354,7 @@ class ResaleEnquiryApi(BaseAPIView):
                     'Enquiry Data',
                     None, 
                     settings.EMAIL_HOST_USER,
-                    ['muhammadsifan.accolades@gmail.com'],
+                     settings.EMAIL_RECIPIENTS,
                     fail_silently=False,
                     html_message = template,
                     )
