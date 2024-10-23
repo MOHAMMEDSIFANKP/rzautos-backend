@@ -21,7 +21,7 @@ class Enquiryserializers(serializers.ModelSerializer):
         car_model =''
         if obj.car:
             car_model = obj.car.model if obj.car.model else ''
-            return f'{obj.car.company.company_name} - {car_model}'
+            return f'{obj.car.make.company_name} - {car_model}'
         else:
             return None
         

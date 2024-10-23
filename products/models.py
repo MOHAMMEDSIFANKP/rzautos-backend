@@ -1,6 +1,7 @@
 from django.db import models
 from web.models import BaseModel
 from ckeditor.fields import RichTextField
+from utils.helper import OptimalImageField
 # Create your models here.
 
 class Transmission(BaseModel):
@@ -73,7 +74,11 @@ class Cars(BaseModel):
         ('LIMOUSINE', 'Limousine'),
         ('TRAILER', 'Trailer'),
     ]
-    thumbnail = models.ImageField(upload_to='car_images/thumbnail')
+    thumbnail = OptimalImageField(
+        upload_to='car_images/',
+        size_threshold_kb=700,  
+        max_dimensions=(1920, 1080)  
+    )
     make = models.ForeignKey(
         Make, 
         on_delete=models.CASCADE, 
@@ -216,7 +221,11 @@ class Cars(BaseModel):
     
 class CarImages(BaseModel):
     car = models.ForeignKey(Cars, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='car_images')
+    image = OptimalImageField(
+        upload_to='car_images/',
+        size_threshold_kb=700,  
+        max_dimensions=(1920, 1080)  
+    )
     image_alt = models.CharField(max_length=255,blank=True,null=True)
 
     class Meta:

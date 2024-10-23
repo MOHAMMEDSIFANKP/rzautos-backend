@@ -36,7 +36,7 @@ class CarsAdmin(admin.ModelAdmin):
 @admin.register(CarImages)
 class CarImagesAdmin(admin.ModelAdmin):
     list_display = ('image_alt',)
-    list_filter = ('car__vehicle_registration','date_added', 'is_hide')
+    list_filter = ('car__vehicle_registration','car__make__company_name','date_added', 'is_hide')
     search_fields = ('car__model','car__make__company_name')
 
 @admin.register(Expense)

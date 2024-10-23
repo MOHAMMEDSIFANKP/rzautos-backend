@@ -1,7 +1,7 @@
 from django.db import models
 import uuid
 from django.utils import timezone
-from ckeditor.fields import RichTextField
+from utils.helper import OptimalImageField
 
 class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -22,8 +22,12 @@ class Testimonials(BaseModel):
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255, null=True, blank=True)
     review_text = models.TextField()
-    profile_picture = models.ImageField(upload_to='testimonials/', null=True, blank=True)
-
+    profile_picture = OptimalImageField(
+        upload_to='testimonials/',
+        size_threshold_kb=700,  
+        max_dimensions=(1920, 1080)  
+    )
+    
     class Meta:
         db_table = 'web.testimonials'
         verbose_name = 'Testimonial'
@@ -73,8 +77,12 @@ class ResaleEnquiry(BaseModel):
     
 class ResaleEnquiryImages(BaseModel):
     resale = models.ForeignKey(ResaleEnquiry, on_delete=models.CASCADE)
-    image = models.FileField(upload_to='resale_enquiry')
-
+    image =  OptimalImageField(
+        upload_to='resale_enquiry/',
+        size_threshold_kb=700,  
+        max_dimensions=(1920, 1080)  
+    )
+    
     class Meta:
         db_table = 'web.resaleenquiryimages'
         verbose_name = 'Resale Enquiry Images'
@@ -104,7 +112,11 @@ class Enquiry(BaseModel):
         return self.name if self.name else str(self.id)
 
 class HomePageCarousel(BaseModel):
-    image = models.ImageField(upload_to='carousel/', null=True, blank=True)
+    image = OptimalImageField(
+        upload_to='carousel/',
+        size_threshold_kb=700,  
+        max_dimensions=(1920, 1080)  
+    )    
     title_1 = models.CharField(max_length=300,null=True,blank=True)
     title_2 = models.CharField(max_length=300)
 
