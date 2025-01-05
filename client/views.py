@@ -279,7 +279,7 @@ class EnquiryApi(BaseAPIView):
                     'Enquiry Data',
                     None, 
                     settings.EMAIL_HOST_USER,
-                     settings.EMAIL_RECIPIENTS,
+                    settings.EMAIL_RECIPIENTS,
                     fail_silently=False,
                     html_message = template,
                     )
