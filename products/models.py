@@ -77,7 +77,9 @@ class Cars(BaseModel):
     thumbnail = OptimalImageField(
         upload_to='car_images/',
         size_threshold_kb=700,  
-        max_dimensions=(1920, 1080)  
+        max_dimensions=(1920, 1080),
+        blank=True, 
+        null=True, 
     )
     make = models.ForeignKey(
         Make, 
@@ -86,15 +88,21 @@ class Cars(BaseModel):
     )
     model = models.CharField(
         max_length=50, 
+        blank=True, 
+        null=True, 
         help_text="Enter the model of the vehicle (e.g., Polo, Golf)"
     )
     fuel_type = models.ForeignKey(
         FuelType, 
-        on_delete=models.CASCADE, 
+        on_delete=models.CASCADE,
+        blank=True, 
+        null=True,
         help_text="Select the vehicle's fuel type (e.g., Petrol, Diesel)"
     )
     transmission = models.ForeignKey(
         Transmission, 
+        blank=True, 
+        null=True,
         on_delete=models.CASCADE, 
         help_text="Select the vehicle's transmission type (e.g., Automatic, Manual)"
     )
@@ -111,6 +119,8 @@ class Cars(BaseModel):
     )
     color = models.ForeignKey(
         Color, 
+        blank=True, 
+        null=True,
         on_delete=models.CASCADE, 
         help_text="Select the color of the vehicle"
     )
@@ -137,8 +147,10 @@ class Cars(BaseModel):
         help_text="Enter the number of previous owners"
     )
     engine_size = models.DecimalField(
-        max_digits=4, 
+        max_digits=10, 
         decimal_places=1, 
+        null=True, 
+        blank=True, 
         help_text="Enter engine size in liters (e.g., 2.0)"
     )
     mileage = models.IntegerField(

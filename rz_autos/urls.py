@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from django.conf import settings
 from django.views.static import serve
+from django.views.generic.base import RedirectView
+
 
 admin.site.site_header = "RZ Autos"
 admin.site.site_title = "RZ Autos"
@@ -30,6 +32,9 @@ urlpatterns = [
     path('api/v1/web/', include('web.urls')),
     path('api/v1/products/', include('products.urls')),
     path('api/v1/client/', include('client.urls')),
+
+    path('', RedirectView.as_view(url='/admin/', permanent=False)),
+
 
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
